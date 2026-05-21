@@ -7,8 +7,20 @@ export class BaseScreen {
         this.defaultTimeout = defaultTimeout;
     }
 
+    protected rid(tag: string): string {
+        return `android=new UiSelector().resourceId("${tag}")`;
+    }
+
+    protected ridPattern(pattern: string): string {
+        return `android=new UiSelector().resourceIdMatches("${pattern}")`;
+    }
+
     async waitForDisplayed(selector: string, timeout?: number): Promise<void> {
         await $(selector).waitForDisplayed({ timeout: timeout ?? this.defaultTimeout });
+    }
+
+    async waitForGone(selector: string): Promise<void> {
+        await $(selector).waitForDisplayed({ timeout: this.defaultTimeout, reverse: true });
     }
 
     async tap(selector: string): Promise<void> {

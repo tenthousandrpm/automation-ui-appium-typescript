@@ -71,8 +71,9 @@ export const config: WebdriverIO.Config = {
       'allure',
       {
         outputDir: 'allure-results',
-        disableWebdriverStepsReporting: true,
+        disableWebdriverStepsReporting: false,
         disableWebdriverScreenshotsReporting: false,
+        useCucumberStepReporter: false,
       },
     ],
   ],

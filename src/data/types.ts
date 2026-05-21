@@ -44,6 +44,18 @@ export interface ProveedorUso {
     pedidoConfirmadoId: number;
 }
 
+// UI-level types for screen object interactions (editable fields only)
+export interface Ingredient {
+    nombre: string;
+    unit: string;
+    supplierType: string;
+}
+
+export interface Supplier {
+    nombre: string;
+    tipo: string;
+}
+
 export interface ChefPlannerBackup {
     version: number;
     exportadoEn: string;

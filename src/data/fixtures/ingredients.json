@@ -1,0 +1,7 @@
+[
+    { "id": 1, "nombre": "Tomate", "unidadMedidaId": 1, "tipoProveedor": null },
+    { "id": 2, "nombre": "Pollo", "unidadMedidaId": 1, "tipoProveedor": null },
+    { "id": 3, "nombre": "Aceite de oliva", "unidadMedidaId": 5, "tipoProveedor": null },
+    { "id": 4, "nombre": "Patatas", "unidadMedidaId": 1, "tipoProveedor": null },
+    { "id": 5, "nombre": "Harina", "unidadMedidaId": 1, "tipoProveedor": null }
+]

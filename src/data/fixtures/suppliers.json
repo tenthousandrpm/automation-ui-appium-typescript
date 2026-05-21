@@ -1,0 +1,5 @@
+[
+    { "id": 1, "nombre": "Mercafresh", "tipo": "Verduras", "ultimaSemanaGenerada": null },
+    { "id": 2, "nombre": "Carnes Ibéricas", "tipo": "Carnes", "ultimaSemanaGenerada": null },
+    { "id": 3, "nombre": "Oleícola Sur", "tipo": "Aceites", "ultimaSemanaGenerada": null }
+]

@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "itemId": 1,
+        "nombre": "Tomate",
+        "unidadNombre": "kg",
+        "tipoProveedor": null,
+        "proveedorId": 1,
+        "cantidad": 5.0,
+        "semana": "2026-W21"
+    },
+    {
+        "id": 2,
+        "itemId": 2,
+        "nombre": "Pollo",
+        "unidadNombre": "kg",
+        "tipoProveedor": null,
+        "proveedorId": 2,
+        "cantidad": 3.5,
+        "semana": "2026-W21"
+    },
+    {
+        "id": 3,
+        "itemId": 3,
+        "nombre": "Aceite de oliva",
+        "unidadNombre": "botellas",
+        "tipoProveedor": null,
+        "proveedorId": 3,
+        "cantidad": 2.0,
+        "semana": "2026-W21"
+    }
+]

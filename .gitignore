@@ -1,8 +1,9 @@
 node_modules/
-package-lock.json
 dist/
 allure-results/
 allure-report/
+*.apk
+.env
 screenshots/
 .wdio-logs/
 *.log

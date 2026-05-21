@@ -3,21 +3,17 @@ import fs from 'fs';
 import type { Frameworks } from '@wdio/types';
 import AllureReporter from '@wdio/allure-reporter';
 import { resetAppState } from './src/helpers/adb';
+import { env } from '@config/environment';
 
 // Standard Android Studio SDK location on Linux/Mac — override via ANDROID_HOME env var
 process.env.ANDROID_HOME ??= path.join(process.env.HOME ?? '', 'Android', 'Sdk');
 process.env.ANDROID_SDK_ROOT ??= process.env.ANDROID_HOME;
 
-const deviceName = process.env.DEVICE_NAME ?? 'emulator-5554';
-const appPath = process.env.APP_PATH
-  ? path.resolve(process.env.APP_PATH)
-  : path.resolve('./app/chefplanner.apk');
-
 export const config: WebdriverIO.Config = {
   runner: 'local',
 
-  hostname: 'localhost',
-  port: 4723,
+  hostname: env.appiumHost,
+  port: env.appiumPort,
   path: '/',
 
   specs: ['./src/specs/**/*.spec.ts'],
@@ -36,8 +32,8 @@ export const config: WebdriverIO.Config = {
     {
       platformName: 'Android',
       'appium:automationName': 'UiAutomator2',
-      'appium:deviceName': deviceName,
-      'appium:app': appPath,
+      'appium:deviceName': env.deviceName,
+      'appium:app': env.appPath,
       'appium:appPackage': 'com.app.chefplanner',
       'appium:appActivity': '.MainActivity',
       'appium:noReset': false,

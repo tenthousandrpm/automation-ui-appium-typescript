@@ -3,6 +3,10 @@ import fs from 'fs';
 import type { Frameworks } from '@wdio/types';
 import AllureReporter from '@wdio/allure-reporter';
 
+// Standard Android Studio SDK location on Linux/Mac — override via ANDROID_HOME env var
+process.env.ANDROID_HOME ??= path.join(process.env.HOME ?? '', 'Android', 'Sdk');
+process.env.ANDROID_SDK_ROOT ??= process.env.ANDROID_HOME;
+
 const deviceName = process.env.DEVICE_NAME ?? 'emulator-5554';
 const appPath = process.env.APP_PATH
   ? path.resolve(process.env.APP_PATH)

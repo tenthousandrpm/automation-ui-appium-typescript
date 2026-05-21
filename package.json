@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "UI test automation suite for an Android app using Appium, WebdriverIO and Mocha",
   "scripts": {
-    "smoke": "wdio run wdio.conf.ts --suite smoke",
-    "regression": "wdio run wdio.conf.ts --suite regression",
-    "e2e": "wdio run wdio.conf.ts",
+    "smoke": "wdio run wdio.smoke.conf.ts",
+    "regression": "wdio run wdio.regression.conf.ts",
+    "e2e": "wdio run wdio.e2e.conf.ts",
     "report": "allure generate allure-results --clean && allure open"
   },
   "devDependencies": {

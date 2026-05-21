@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import type { Frameworks } from '@wdio/types';
 import AllureReporter from '@wdio/allure-reporter';
+import { resetAppState } from './src/helpers/adb';
 
 // Standard Android Studio SDK location on Linux/Mac — override via ANDROID_HOME env var
 process.env.ANDROID_HOME ??= path.join(process.env.HOME ?? '', 'Android', 'Sdk');
@@ -82,7 +83,11 @@ export const config: WebdriverIO.Config = {
   },
 
   beforeTest: async function (test: Frameworks.Test) {
-    console.log(`▶ Starting: ${test.fullTitle}`);
+    console.log(`▶ Starting: ${test.title}`);
+
+    if (!test.title.includes('@noReset')) {
+      await resetAppState();
+    }
   },
 
   afterTest: async function (

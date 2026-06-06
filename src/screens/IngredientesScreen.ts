@@ -18,22 +18,18 @@ export class IngredientesScreen extends BaseScreen {
         throw new Error(`Ingredient "${name}" not found`);
     }
 
-    /**
-     * Taps the unit dropdown field to open it, then iterates ingrediente_form_unidad_*
-     * items (resource-id pattern) to find the one matching unitName by text.
-     * Unit IDs are database-generated and unknown at test time — ridPattern is the
-     * only compliant way to enumerate the menu without hardcoding IDs.
-     */
     private async selectUnit(unitName: string): Promise<void> {
         await this.tap(this.rid('ingrediente_form_campo_unidad'));
-        const items = await $$(this.ridPattern('ingrediente_form_unidad_\\d+'));
-        for (const item of items) {
-            if ((await item.getText()) === unitName) {
-                await item.click();
-                return;
-            }
-        }
-        throw new Error(`Unit "${unitName}" not found in dropdown`);
+        const item = $(`android=new UiSelector().text("${unitName}")`);
+        await item.waitForDisplayed({ timeout: 5_000 });
+        await item.click();
+    }
+
+    private async selectTipo(tipoName: string): Promise<void> {
+        await this.tap(this.rid('ingrediente_form_campo_tipo'));
+        const item = $(`android=new UiSelector().text("${tipoName}")`);
+        await item.waitForDisplayed({ timeout: 5_000 });
+        await item.click();
     }
 
     private async waitForFormClosed(): Promise<void> {
@@ -50,8 +46,7 @@ export class IngredientesScreen extends BaseScreen {
         await this.selectUnit(unit);
 
         if (supplierType !== undefined) {
-            await this.tap(this.rid('ingrediente_form_campo_tipo'));
-            await this.tap(this.rid(`ingrediente_form_tipo_${supplierType}`));
+            await this.selectTipo(supplierType);
         }
 
         await this.tap(this.rid('ingrediente_form_btn_guardar'));
@@ -74,8 +69,7 @@ export class IngredientesScreen extends BaseScreen {
         }
 
         if (updates.supplierType !== undefined) {
-            await this.tap(this.rid('ingrediente_form_campo_tipo'));
-            await this.tap(this.rid(`ingrediente_form_tipo_${updates.supplierType}`));
+            await this.selectTipo(updates.supplierType);
         }
 
         await this.tap(this.rid('ingrediente_form_btn_guardar'));
@@ -92,6 +86,14 @@ export class IngredientesScreen extends BaseScreen {
 
     async getIngredientCount(): Promise<number> {
         return (await $$(this.ridPattern('ingredientes_item_\\d+'))).length;
+    }
+
+    async hasIngredient(name: string): Promise<boolean> {
+        const items = await $$(this.ridPattern('ingredientes_item_\\d+'));
+        for (const item of items) {
+            if ((await item.getText()).includes(name)) return true;
+        }
+        return false;
     }
 }
 

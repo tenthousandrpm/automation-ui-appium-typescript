@@ -65,14 +65,18 @@ export class PedidoScreen extends BaseScreen {
     /**
      * Searches for an ingredient by exact name and taps it to add it to the order.
      * Hides the keyboard first to clear any floating toolbar tooltip that would intercept
-     * the tap. Targets className(TextView) to avoid matching the EditText search field,
-     * which also contains the typed name. Waits for the picker to close before returning
-     * so the next call can safely tap the FAB again.
+     * the tap. After typing, the picker filters results live — waits for the first
+     * picker_ingrediente_<id> row to appear and clicks it. The ListItem container carries
+     * the clickable handler; the inner text nodes do not. Waits for the picker to close
+     * before returning so the next call can safely tap the FAB.
      */
     async addIngredientFromSearch(name: string): Promise<void> {
         await this.searchIngredient(name);
         await browser.hideKeyboard();
-        await this.tap(`android=new UiSelector().text("${name}").className("android.widget.TextView")`);
+
+        const firstRow = $(this.ridPattern('picker_ingrediente_\\d+'));
+        await firstRow.waitForDisplayed({ timeout: 5_000 });
+        await firstRow.click();
         await this.waitForGone(this.rid('picker_campo_buscar'));
     }
 

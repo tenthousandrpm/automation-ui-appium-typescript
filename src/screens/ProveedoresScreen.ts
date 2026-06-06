@@ -65,6 +65,10 @@ export class ProveedoresScreen extends BaseScreen {
         await this.tap(this.rid('proveedores_dialog_eliminar_confirmar'));
         await this.waitForGone(this.rid('proveedores_dialog_eliminar_confirmar'));
     }
+
+    async getSupplierCount(): Promise<number> {
+        return (await $$(this.ridPattern('proveedores_item_\\d+'))).length;
+    }
 }
 
 export default new ProveedoresScreen();

@@ -61,3 +61,11 @@ npx appium
 ```
 
 **3. Click Start Session.** The app launches and you can inspect elements. Use the tree panel to find `resource-id` values — they match the `testTag` names in the Compose source directly (e.g. `pedido_fab_agregar`).
+
+## Shortcut
+
+```bash
+emulator -avd Medium_Phone_API_36.1 -no-snapshot-save
+adb install -r -t app/chefplanner.apk
+npm run test:e2e
+```

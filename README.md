@@ -27,6 +27,11 @@ npm run test:regression
 npm run test:e2e
 ```
 
+**Launch Appium server**
+```bash
+npx appium --port 4723
+```
+
 **View report**
 ```bash
 npm run report

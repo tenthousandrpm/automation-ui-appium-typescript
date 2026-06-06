@@ -15,7 +15,11 @@ export class GeneracionScreen extends BaseScreen {
             return new Map();
         }
 
-        const text = await this.getText(this.rid('generacion_card_texto'));
+        // generacion_card_texto is a Compose View container (text: null on the node itself).
+        // The actual formatted text lives in a child TextView — use a UiAutomator
+        // childSelector chain so the driver resolves it in a single native query.
+        const textEl = $('android=new UiSelector().resourceId("generacion_card_texto").childSelector(new UiSelector().className("android.widget.TextView"))');
+        const text = (await textEl.getText()) ?? '';
         const groups = new Map<string, string[]>();
 
         for (const block of text.split('\n\n')) {
@@ -40,8 +44,13 @@ export class GeneracionScreen extends BaseScreen {
         return (await this.parseCardText()).get(supplierName) ?? [];
     }
 
-    // Taps confirm and waits for navigation away (button leaves the tree).
+    // Waits for the button to be enabled (supplier resolution can finish after the card
+    // appears), taps it, then waits for navigation away (button leaves the tree).
     async confirmOrder(): Promise<void> {
+        await browser.waitUntil(
+            () => $(this.rid('generacion_btn_confirmar')).isEnabled(),
+            { timeout: this.defaultTimeout, timeoutMsg: 'Confirm button never became enabled' },
+        );
         await this.tap(this.rid('generacion_btn_confirmar'));
         await this.waitForGone(this.rid('generacion_btn_confirmar'));
     }

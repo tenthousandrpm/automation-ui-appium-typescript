@@ -97,23 +97,42 @@ class ConfiguracionScreen extends BaseScreen {
 
     /**
      * Navigates the Android system file picker (Documents UI) to select a file
-     * from the Downloads folder. The left-drawer "Downloads" shortcut is the most
-     * stable entry point across Android versions.
+     * from the Downloads folder.
+     *
+     * On API 36 the left drawer is collapsed by default. We open it first via the
+     * "Show roots" hamburger button (standard content-desc in DocumentsUI), then
+     * tap the Downloads entry.
      */
     private async _selectFileInSystemPicker(fileName: string): Promise<void> {
         await browser.pause(800);
 
-        try {
-            const drawer = $('android=new UiSelector().textContains("Downloads")');
-            await drawer.waitForDisplayed({ timeout: 3_000 });
-            await drawer.click();
-            await browser.pause(400);
-        } catch {
-            // Drawer not visible — picker may already be showing Downloads
-        }
-
         const baseName = path.parse(fileName).name;
         const entry = $(`android=new UiSelector().textContains("${baseName}")`);
+
+        // If the picker already shows the file (Android remembers the last folder),
+        // tap it directly — no drawer navigation needed.
+        if (await entry.isDisplayed()) {
+            await entry.click();
+            return;
+        }
+
+        // Picker opened on Recent (first run or cache cleared). Open the left drawer
+        // via the hamburger — collapsed by default on API 36+ — then navigate to Downloads.
+        try {
+            const hamburger = $('android=new UiSelector().descriptionContains("roots")');
+            if (await hamburger.isDisplayed()) {
+                await hamburger.click();
+                await browser.pause(400);
+            }
+        } catch { /* drawer may already be open */ }
+
+        try {
+            const downloads = $('android=new UiSelector().textContains("Downloads")');
+            await downloads.waitForDisplayed({ timeout: 3_000 });
+            await downloads.click();
+            await browser.pause(400);
+        } catch { /* picker may already be showing Downloads */ }
+
         await entry.waitForDisplayed({ timeout: 5_000 });
         await entry.click();
     }

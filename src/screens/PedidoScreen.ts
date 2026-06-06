@@ -30,10 +30,19 @@ export class PedidoScreen extends BaseScreen {
     private async findItemId(itemName: string): Promise<string> {
         await this.scrollToElement(`android=new UiSelector().text("${itemName}")`);
 
+        // Compose container nodes return "" for getText(), and UiAutomator2 child
+        // element searches fall back to a global match rather than scoping within the
+        // element's subtree. Use spatial overlap instead: find the text element on
+        // screen and return the row whose Y bounds contain it.
+        const nameEl = $(`android=new UiSelector().text("${itemName}")`);
+        await nameEl.waitForDisplayed({ timeout: this.defaultTimeout });
+        const { y: nameY } = await nameEl.getLocation();
+
         const rows = await $$(this.ridPattern('pedido_item_row_\\d+'));
         for (const row of rows) {
-            const text = await row.getText();
-            if (text.includes(itemName)) {
+            const { y: rowY } = await row.getLocation();
+            const { height: rowH } = await row.getSize();
+            if (nameY >= rowY && nameY <= rowY + rowH) {
                 const resourceId = await row.getAttribute('resource-id') ?? '';
                 return resourceId.split('pedido_item_row_')[1];
             }
@@ -55,13 +64,16 @@ export class PedidoScreen extends BaseScreen {
 
     /**
      * Searches for an ingredient by exact name and taps it to add it to the order.
-     * The picker filters the list as text is typed; the tap targets the name text element
-     * within the filtered result. Verify with Appium Inspector that text("name") resolves
-     * to the ListItem's clickable node (or its tappable ancestor) after filtering.
+     * Hides the keyboard first to clear any floating toolbar tooltip that would intercept
+     * the tap. Targets className(TextView) to avoid matching the EditText search field,
+     * which also contains the typed name. Waits for the picker to close before returning
+     * so the next call can safely tap the FAB again.
      */
     async addIngredientFromSearch(name: string): Promise<void> {
         await this.searchIngredient(name);
-        await this.tap(`android=new UiSelector().text("${name}")`);
+        await browser.hideKeyboard();
+        await this.tap(`android=new UiSelector().text("${name}").className("android.widget.TextView")`);
+        await this.waitForGone(this.rid('picker_campo_buscar'));
     }
 
     /**

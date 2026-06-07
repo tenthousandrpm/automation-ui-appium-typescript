@@ -62,6 +62,6 @@ export async function createOrderFlow(
     await HomeScreen.historicoTab.click();
     await browser.waitUntil(
         async () => (await HistoricoScreen.getOrderCount()) > 0,
-        { timeout: 10000, timeoutMsg: 'Confirmed order not found in Histórico' },
+        { timeout: 20_000, timeoutMsg: 'Confirmed order not found in Histórico' },
     );
 }

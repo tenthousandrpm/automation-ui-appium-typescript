@@ -45,14 +45,16 @@ export class GeneracionScreen extends BaseScreen {
     }
 
     // Waits for the button to be enabled (supplier resolution can finish after the card
-    // appears), taps it, then waits for navigation away (button leaves the tree).
+    // appears) then taps it. Navigation to Histórico is async — the caller is responsible
+    // for waiting on a Histórico-side condition. waitForGone on this button is unreliable
+    // because Compose Navigation keeps the Pedido/Generación composable alive in memory
+    // (saveState = true), so the node never leaves the accessibility tree.
     async confirmOrder(): Promise<void> {
         await browser.waitUntil(
             () => $(this.rid('generacion_btn_confirmar')).isEnabled(),
             { timeout: this.defaultTimeout, timeoutMsg: 'Confirm button never became enabled' },
         );
         await this.tap(this.rid('generacion_btn_confirmar'));
-        await this.waitForGone(this.rid('generacion_btn_confirmar'));
     }
 
     async isOrderConfirmationVisible(): Promise<boolean> {

@@ -59,6 +59,11 @@ class ConfiguracionScreen extends BaseScreen {
      */
     async importBackup(filePath: string): Promise<void> {
         const devicePath = `${DEVICE_DOWNLOAD}/${path.basename(filePath)}`;
+        // Remove accumulated seed files from prior runs before pushing (best-effort).
+        try {
+            execFileSync(adbBin(), ['-s', serial(), 'shell', 'sh', '-c',
+                `find ${DEVICE_DOWNLOAD} -name 'chefplanner_seed_*.json' -delete`], { stdio: 'pipe' });
+        } catch { /* non-critical */ }
         execFileSync(adbBin(), ['-s', serial(), 'push', filePath, devicePath], { stdio: 'pipe' });
 
         await this.tap(this.rid('config_item_importar'));
@@ -109,9 +114,12 @@ class ConfiguracionScreen extends BaseScreen {
         const baseName = path.parse(fileName).name;
         const entry = $(`android=new UiSelector().textContains("${baseName}")`);
 
-        // If the picker already shows the file (Android remembers the last folder),
-        // tap it directly — no drawer navigation needed.
-        if (await entry.isDisplayed()) {
+        // If the picker is already on Downloads (Android remembers last folder), the file
+        // may still be loading. Wait up to 3 s before attempting drawer navigation —
+        // re-clicking Downloads when already active causes DocumentsUI to jump to Recent.
+        const alreadyVisible = await entry.waitForDisplayed({ timeout: 1_000 })
+            .then(() => true).catch(() => false);
+        if (alreadyVisible) {
             await entry.click();
             return;
         }

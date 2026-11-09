@@ -43,6 +43,12 @@ export async function deleteIngredientFlow(name: string): Promise<void> {
     );
 }
 
+export async function editSupplierFlow(name: string, updates: Partial<Supplier>): Promise<void> {
+    await HomeScreen.catalogoTab.click();
+    await CatalogoScreen.navigateToProveedores();
+    await ProveedoresScreen.editSupplier(name, updates);
+}
+
 export async function createSupplierFlow(supplier: Supplier): Promise<void> {
     await HomeScreen.catalogoTab.click();
     await CatalogoScreen.navigateToProveedores();

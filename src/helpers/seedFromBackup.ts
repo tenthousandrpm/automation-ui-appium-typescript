@@ -19,7 +19,7 @@ export async function seedFromBackup(source: string | ChefPlannerBackup): Promis
     if (typeof source === 'string') {
         fixturePath = source;
     } else {
-        fixturePath = path.join(os.tmpdir(), `chefplanner_seed_${Date.now()}.json`);
+        fixturePath = path.join(os.tmpdir(), 'chefplanner_seed_import.json');
         fs.writeFileSync(fixturePath, JSON.stringify(source, null, 2));
         tmpCreated = true;
     }

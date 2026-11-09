@@ -59,9 +59,7 @@ export class IngredientesScreen extends BaseScreen {
         await this.waitForDisplayed(this.rid('ingrediente_form_campo_nombre'));
 
         if (updates.nombre !== undefined) {
-            const campo = $(this.rid('ingrediente_form_campo_nombre'));
-            await campo.clearValue();
-            await campo.setValue(updates.nombre);
+            await this.replaceValue(this.rid('ingrediente_form_campo_nombre'), updates.nombre);
         }
 
         if (updates.unit !== undefined) {
@@ -82,6 +80,27 @@ export class IngredientesScreen extends BaseScreen {
         await this.waitForDisplayed(this.rid('ingredientes_dialog_eliminar_confirmar'));
         await this.tap(this.rid('ingredientes_dialog_eliminar_confirmar'));
         await this.waitForGone(this.rid('ingredientes_dialog_eliminar_confirmar'));
+    }
+
+    /**
+     * Opens the new-ingredient form, fills name and unit without selecting a supplier type,
+     * then taps Guardar. Returns false if the form stayed open (validation fired — expected
+     * for the "no supplier type" regression case); returns true if the form closed (saved).
+     * Dismisses the form via Android back if it remained open.
+     */
+    async tryAddIngredientWithoutSupplierType(name: string, unit: string): Promise<boolean> {
+        await this.tap(this.rid('ingredientes_fab_agregar'));
+        await this.waitForDisplayed(this.rid('ingrediente_form_campo_nombre'));
+        await this.setValue(this.rid('ingrediente_form_campo_nombre'), name);
+        await this.selectUnit(unit);
+        await this.tap(this.rid('ingrediente_form_btn_guardar'));
+        await browser.pause(500);
+        const formStillOpen = await $(this.rid('ingrediente_form_btn_guardar')).isDisplayed();
+        if (formStillOpen) {
+            await browser.back();
+            await this.waitForGone(this.rid('ingrediente_form_btn_guardar'));
+        }
+        return !formStillOpen;
     }
 
     async getIngredientCount(): Promise<number> {

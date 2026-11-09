@@ -5,11 +5,20 @@ export class UnidadesScreen extends BaseScreen {
 
     // --- Private helpers ---
 
+    // Compose container nodes return "" for getText() so we use spatial overlap
+    // (same pattern as PedidoScreen.findItemId) to locate the row by position.
     private async findUnidadId(name: string): Promise<string> {
         await this.scrollToElement(`android=new UiSelector().text("${name}")`);
+
+        const nameEl = $(`android=new UiSelector().text("${name}")`);
+        await nameEl.waitForDisplayed({ timeout: this.defaultTimeout });
+        const { y: nameY } = await nameEl.getLocation();
+
         const rows = await $$(this.ridPattern('unidades_item_\\d+'));
         for (const row of rows) {
-            if ((await row.getText()).includes(name)) {
+            const { y: rowY } = await row.getLocation();
+            const { height: rowH } = await row.getSize();
+            if (nameY >= rowY && nameY <= rowY + rowH) {
                 const resourceId = await row.getAttribute('resource-id') ?? '';
                 return resourceId.split('unidades_item_')[1];
             }
@@ -33,6 +42,24 @@ export class UnidadesScreen extends BaseScreen {
         await this.waitForDisplayed(this.rid('unidades_dialog_eliminar_confirmar'));
         await this.tap(this.rid('unidades_dialog_eliminar_confirmar'));
         await this.waitForGone(this.rid('unidades_dialog_eliminar_confirmar'));
+    }
+
+    async getUnitCount(): Promise<number> {
+        return (await $$(this.ridPattern('unidades_item_\\d+'))).length;
+    }
+
+    async hasUnit(name: string): Promise<boolean> {
+        try {
+            await this.scrollToElement(`android=new UiSelector().text("${name}")`);
+            return $(`android=new UiSelector().text("${name}")`).isDisplayed();
+        } catch {
+            return false;
+        }
+    }
+
+    async isDeleteButtonVisible(name: string): Promise<boolean> {
+        const id = await this.findUnidadId(name);
+        return $(this.rid(`unidades_btn_eliminar_${id}`)).isExisting();
     }
 
     /**

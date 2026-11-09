@@ -85,6 +85,23 @@ export class HistoricoScreen extends BaseScreen {
     }
 
     /**
+     * Deletes the first order in the list by its resource-id, without requiring a
+     * known weekLabel. Useful in regression tests where the exact semana value is
+     * unknown at test-write time.
+     */
+    async deleteFirstOrder(): Promise<void> {
+        const rows = await $$(this.ridPattern('historico_pedido_\\d+'));
+        const first = rows[0];
+        if (!first) throw new Error('No orders found in Histórico');
+        const resourceId = await first.getAttribute('resource-id') ?? '';
+        const id = resourceId.split('historico_pedido_')[1];
+        await this.tap(this.rid(`historico_btn_eliminar_${id}`));
+        await this.waitForDisplayed(this.rid('historico_dialog_eliminar_confirmar'));
+        await this.tap(this.rid('historico_dialog_eliminar_confirmar'));
+        await this.waitForGone(this.rid('historico_dialog_eliminar_confirmar'));
+    }
+
+    /**
      * Taps the delete icon for the order matching weekLabel, then confirms the
      * AlertDialog that the app always shows before deleting.
      */

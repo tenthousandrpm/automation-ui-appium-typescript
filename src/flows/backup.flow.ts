@@ -6,8 +6,8 @@ import ConfiguracionScreen from '@screens/ConfiguracionScreen';
 import HomeScreen from '@screens/HomeScreen';
 import IngredientesScreen from '@screens/IngredientesScreen';
 
-export async function restoreBackupFlow(fixturePath: string): Promise<void> {
-    await seedFromBackup(fixturePath);
+export async function restoreBackupFlow(source: string | ChefPlannerBackup): Promise<void> {
+    await seedFromBackup(source);
 
     await HomeScreen.catalogoTab.click();
     await CatalogoScreen.navigateToIngredientes();

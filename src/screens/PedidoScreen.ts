@@ -101,9 +101,7 @@ export class PedidoScreen extends BaseScreen {
         await this.tap(this.rid(`pedido_cantidad_${id}`));
         await this.waitForDisplayed(this.rid('pedido_dialog_cantidad_campo'));
 
-        const campo = this.dialogCantidadCampo;
-        await campo.clearValue();
-        await campo.setValue(String(quantity));
+        await this.replaceValue(this.rid('pedido_dialog_cantidad_campo'), String(quantity));
 
         await this.tap(this.rid('pedido_dialog_cantidad_confirmar'));
     }
@@ -121,14 +119,30 @@ export class PedidoScreen extends BaseScreen {
         const { x, y } = await swipeTarget.getLocation();
         const { width, height } = await swipeTarget.getSize();
 
+        // Rows span the full screen width. A swipe starting at the right edge is taken
+        // as the Android back gesture (gesture navigation) and sends the app to the
+        // background, so keep the swipe area away from both edges.
+        const inset = Math.round(width * 0.1);
         await browser.execute('mobile: swipeGesture', {
-            left: x,
+            left: x + inset,
             top: y,
-            width,
+            width: width - 2 * inset,
             height,
             direction: 'left',
             percent: 0.75,
         });
+    }
+
+    /** Returns the number of ingredient rows currently visible in the picker. */
+    async getPickerResultCount(): Promise<number> {
+        const rows = await $$(this.ridPattern('picker_ingrediente_\\d+'));
+        return rows.length;
+    }
+
+    /** Closes the ingredient picker via its close button. */
+    async closePicker(): Promise<void> {
+        await this.tap(this.rid('picker_btn_cerrar'));
+        await this.waitForGone(this.rid('picker_campo_buscar'));
     }
 
     /** Taps the "Generar pedido" button. Only visible when the order has at least one item. */

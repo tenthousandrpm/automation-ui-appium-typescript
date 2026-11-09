@@ -35,6 +35,15 @@ export class BaseScreen {
         await el.setValue(value);
     }
 
+    // For pre-filled Compose text fields. clearValue() doesn't reach the accessibility
+    // node in time, and UiAutomator2's sendKeys appends to the text it still sees, so
+    // "Old" + "New" becomes "OldNew". replaceElementValue sets the whole value at once.
+    async replaceValue(selector: string, value: string): Promise<void> {
+        const el = $(selector);
+        await el.waitForDisplayed({ timeout: this.defaultTimeout });
+        await browser.execute('mobile: replaceElementValue', { elementId: await el.elementId, text: value });
+    }
+
     async getText(selector: string): Promise<string> {
         const el = $(selector);
         await el.waitForDisplayed({ timeout: this.defaultTimeout });

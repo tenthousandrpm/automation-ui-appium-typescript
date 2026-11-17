@@ -1,9 +1,0 @@
-{
-  "suite": "regression",
-  "runNumber": "6",
-  "result": "success",
-  "branch": "ci/report-pr-head-sha",
-  "sha": "eedf7fc21447c50e18f845ab3acbc4d0d49db0a8",
-  "runUrl": "https://github.com/tenthousandrpm/automation-ui-appium-typescript/actions/runs/44152913869",
-  "date": "2026-11-17T19:01:59Z"
-}

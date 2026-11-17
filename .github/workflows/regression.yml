@@ -1,0 +1,76 @@
+name: regression
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # Branch protection on main requires this job's check ("regression") to pass.
+  # Renaming the job breaks that rule.
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      WDIO_ENV: ci
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # Same download as smoke.yml: newest unexpired APK artifact from chefplanner's main,
+      # read with a fine-grained token because GITHUB_TOKEN can't see another repo.
+      - name: Download ChefPlanner APK
+        env:
+          GH_TOKEN: ${{ secrets.CHEFPLANNER_ARTIFACTS_TOKEN }}
+        run: |
+          run_id=$(gh api 'repos/tenthousandrpm/chefplanner/actions/artifacts?name=chefplanner-debug.apk&per_page=100' \
+            --jq '[.artifacts[] | select(.expired == false and .workflow_run.head_branch == "main")][0].workflow_run.id // empty')
+          if [ -z "$run_id" ]; then
+            echo "::error::No unexpired chefplanner-debug.apk artifact on chefplanner main. Run build-apk there (Actions > build-apk > Run workflow) and retry."
+            exit 1
+          fi
+          echo "Using APK from chefplanner run $run_id"
+          gh run download "$run_id" -R tenthousandrpm/chefplanner -n chefplanner-debug.apk -D app
+          ls -la app/
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run regression suite on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: npm run test:regression
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: screenshots
+          retention-days: 14
+          if-no-files-found: ignore

@@ -1,0 +1,4 @@
+{
+  "using": "-android uiautomator",
+  "value": "new UiSelector().resourceId(\"generacion_card_texto\").childSelector(new UiSelector().className(\"android.widget.TextView\"))"
+}

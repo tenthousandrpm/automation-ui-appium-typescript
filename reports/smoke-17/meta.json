@@ -1,9 +1,0 @@
-{
-  "suite": "smoke",
-  "runNumber": "17",
-  "result": "success",
-  "branch": "main",
-  "sha": "d0facf235850009d9e7a2a8c78c2cdce06c3f76c",
-  "runUrl": "https://github.com/tenthousandrpm/automation-ui-appium-typescript/actions/runs/44155308093",
-  "date": "2026-11-17T19:13:20Z"
-}

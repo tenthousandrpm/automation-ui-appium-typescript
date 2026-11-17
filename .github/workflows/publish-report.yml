@@ -57,6 +57,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: ${{ github.head_ref || github.ref_name }}
+          # On pull_request, GITHUB_SHA is GitHub's temporary merge commit; record the PR head instead.
+          COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
           RESULT: ${{ inputs.result }}
           SUITE: ${{ inputs.suite }}
         run: |
@@ -78,7 +80,7 @@ jobs:
             cp -r allure-report "site/reports/$REPORT_DIR"
             jq -n \
               --arg suite "$SUITE" --arg runNumber "$GITHUB_RUN_NUMBER" --arg result "$RESULT" \
-              --arg branch "$BRANCH" --arg sha "$GITHUB_SHA" \
+              --arg branch "$BRANCH" --arg sha "$COMMIT" \
               --arg runUrl "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
               --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
               '$ARGS.named' > "site/reports/$REPORT_DIR/meta.json"

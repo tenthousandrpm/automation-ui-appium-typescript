@@ -125,6 +125,8 @@ build-apk workflow                        smoke / regression workflows
 
 ## Working on tests
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add Screen Objects, tests and suites, report a broken selector, and write commits.
+
 ### Appium Inspector
 
 Use it to browse the element tree. Close it before running tests.

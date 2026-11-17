@@ -39,6 +39,12 @@ npm run report
 
 ---
 
+## Selector strategy
+
+Elements are located by Compose `testTag`s exposed as resource-ids, with text selectors only for documented exceptions and no XPath. See [docs/selector-strategy.md](docs/selector-strategy.md) for the rules, the Compose/UiAutomator2 quirks behind them, and how to inspect the app.
+
+---
+
 ## Using Appium Inspector
 
 > Do not run Inspector and the test suite on the same emulator at the same time — they both own the UiAutomator2 process and will kill each other.

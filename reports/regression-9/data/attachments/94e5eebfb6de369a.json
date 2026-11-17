@@ -1,0 +1,4 @@
+{
+  "using": "-android uiautomator",
+  "value": "new UiSelector().textContains(\"chefplanner_seed_invalid_1794943325175\")"
+}

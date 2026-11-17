@@ -28,6 +28,11 @@ export const config: WebdriverIO.Config = {
 
   maxInstances: 1,
 
+  // On Linux without a display (CI), WDIO wraps each worker in xvfb-run, which breaks
+  // the worker's IPC channel ("write EINVAL"). Appium drives the emulator, not a local
+  // browser, so no virtual display is needed.
+  autoXvfb: false,
+
   capabilities: [
     {
       platformName: 'Android',

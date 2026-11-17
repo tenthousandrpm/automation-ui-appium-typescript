@@ -87,3 +87,15 @@ jobs:
           path: screenshots
           retention-days: 14
           if-no-files-found: ignore
+
+  # Not part of the required check: a failed publish doesn't block merging.
+  # PRs from forks get a read-only token and can't push to gh-pages, so they skip it.
+  publish-report:
+    needs: smoke
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/publish-report.yml
+    with:
+      suite: smoke
+      result: ${{ needs.smoke.result }}

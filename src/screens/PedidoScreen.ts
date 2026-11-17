@@ -57,8 +57,7 @@ export class PedidoScreen extends BaseScreen {
      * Leaves the picker open so the caller can act on results.
      */
     async searchIngredient(name: string): Promise<void> {
-        await this.tap(this.rid('pedido_fab_agregar'));
-        await this.waitForDisplayed(this.rid('picker_campo_buscar'));
+        await this.tapUntilDisplayed(this.rid('pedido_fab_agregar'), this.rid('picker_campo_buscar'));
         await this.setValue(this.rid('picker_campo_buscar'), name);
     }
 
@@ -143,6 +142,22 @@ export class PedidoScreen extends BaseScreen {
     async closePicker(): Promise<void> {
         await this.tap(this.rid('picker_btn_cerrar'));
         await this.waitForGone(this.rid('picker_campo_buscar'));
+    }
+
+    /**
+     * Empties the order: overflow menu → "Vaciar pedido" → confirm dialog.
+     * The overflow button only exists while the order has items.
+     */
+    async clearOrder(): Promise<void> {
+        // The menu item's testTag (pedido_menu_vaciar) is not exposed: DropdownMenu renders
+        // in its own popup window, which doesn't inherit testTagsAsResourceId from the
+        // Scaffold. Match its visible text instead.
+        const menuVaciar = 'android=new UiSelector().text("Vaciar pedido")';
+        await this.tapUntilDisplayed(this.rid('pedido_btn_mas_opciones'), menuVaciar);
+        await this.tap(menuVaciar);
+        await this.waitForDisplayed(this.rid('pedido_dialog_vaciar_confirmar'));
+        await this.tap(this.rid('pedido_dialog_vaciar_confirmar'));
+        await this.waitForGone(this.rid('pedido_dialog_vaciar_confirmar'));
     }
 
     /** Taps the "Generar pedido" button. Only visible when the order has at least one item. */

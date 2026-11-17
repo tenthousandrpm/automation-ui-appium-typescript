@@ -22,7 +22,7 @@ describe('[E2E] Create Order', () => {
         AllureReporter.addStory('Crear pedido completo');
     });
 
-    it('should create a full order and confirm it to Histórico', async () => {
+    it('[E01] should create a full order and confirm it to Histórico', async () => {
         await createOrderFlow(
             [
                 { ingredientName: 'Tomate', quantity: 5,   expectedSupplier: 'Mercafresh'      },

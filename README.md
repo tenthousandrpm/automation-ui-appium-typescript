@@ -66,6 +66,6 @@ npx appium
 
 ```bash
 emulator -avd Medium_Phone_API_36.1 -no-snapshot-save
-adb install -r -t app/chefplanner.apk
+adb install -r -t app/chefplanner-debug.apk
 npm run test:e2e
 ```

@@ -40,6 +40,11 @@ export class GeneracionScreen extends BaseScreen {
         return Array.from((await this.parseCardText()).keys());
     }
 
+    /** Supplier name → item lines ("Tomate: 5 kg"), read from the card in a single pass. */
+    async getSupplierGroupsWithItems(): Promise<Record<string, string[]>> {
+        return Object.fromEntries(await this.parseCardText());
+    }
+
     async getItemsForSupplier(supplierName: string): Promise<string[]> {
         return (await this.parseCardText()).get(supplierName) ?? [];
     }

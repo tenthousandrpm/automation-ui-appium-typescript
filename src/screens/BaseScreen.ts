@@ -29,6 +29,21 @@ export class BaseScreen {
         await el.click();
     }
 
+    // Compose keeps a tab's nodes in the tree while another tab is shown (saveState), so
+    // right after a bottom-nav switch a button reports "displayed" before the transition
+    // ends, and a tap made then is silently dropped. Retry the tap until its result
+    // appears; the target is checked before each retry so a slow open isn't tapped twice.
+    async tapUntilDisplayed(trigger: string, target: string): Promise<void> {
+        await browser.waitUntil(
+            async () => {
+                if (await $(target).isDisplayed()) return true;
+                await this.tap(trigger);
+                return $(target).waitForDisplayed({ timeout: 2_000 }).then(() => true, () => false);
+            },
+            { timeout: this.defaultTimeout, interval: 300, timeoutMsg: `${target} never appeared after tapping ${trigger}` },
+        );
+    }
+
     async setValue(selector: string, value: string): Promise<void> {
         const el = $(selector);
         await el.waitForDisplayed({ timeout: this.defaultTimeout });

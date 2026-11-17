@@ -47,7 +47,7 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run regression suite on emulator
+      - name: Run regression and E2E suites on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
@@ -61,11 +61,13 @@ jobs:
           ram-size: 4096M
           # Hide system error dialogs, let the launcher settle, then close anything already
           # showing. "|| true" keeps a rejected setting or broadcast from failing the job.
+          # The runner executes each script line in its own shell, so the two suites share
+          # one line: E2E still runs when regression fails, and the job fails if either does.
           script: |
             adb shell settings put global hide_error_dialogs 1 || true
             sleep 15
             adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS || true
-            npm run test:regression
+            rc=0; npm run test:regression || rc=1; npm run test:e2e || rc=1; exit $rc
 
       - name: Upload Allure results
         if: always()

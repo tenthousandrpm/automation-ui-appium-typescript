@@ -1,0 +1,4 @@
+{
+  "using": "-android uiautomator",
+  "value": "new UiSelector().resourceId(\"pedido_dialog_vaciar_confirmar\")"
+}

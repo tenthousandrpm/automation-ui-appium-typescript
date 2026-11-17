@@ -55,7 +55,17 @@ jobs:
           arch: x86_64
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: npm run test:regression
+          # The default (2 cores) is slow enough that Pixel Launcher can freeze right after
+          # boot, and its "isn't responding" dialog then covers the app under test.
+          cores: 4
+          ram-size: 4096M
+          # Hide system error dialogs, let the launcher settle, then close anything already
+          # showing. "|| true" keeps a rejected setting or broadcast from failing the job.
+          script: |
+            adb shell settings put global hide_error_dialogs 1 || true
+            sleep 15
+            adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS || true
+            npm run test:regression
 
       - name: Upload Allure results
         if: always()

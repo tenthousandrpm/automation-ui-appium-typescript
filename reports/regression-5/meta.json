@@ -1,9 +1,0 @@
-{
-  "suite": "regression",
-  "runNumber": "5",
-  "result": "success",
-  "branch": "ci/allure-gh-pages",
-  "sha": "5961061000e5b6640ad3ab0201c1a94b2ae391db",
-  "runUrl": "https://github.com/tenthousandrpm/automation-ui-appium-typescript/actions/runs/44150867078",
-  "date": "2026-11-17T18:49:42Z"
-}

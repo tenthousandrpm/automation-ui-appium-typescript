@@ -7,3 +7,6 @@ allure-report/
 screenshots/
 .wdio-logs/
 *.log
+
+# Personal VS Code workspaces (they reference local folder layouts)
+*.code-workspace
